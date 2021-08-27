@@ -38,13 +38,13 @@ public class UserDetails {
     public UserDetails() {
     }
 
-    public UserDetails(int id, String firstName, String lastName, String phoneNumber, User user, Set<Reservation> reservations) {
+    public UserDetails(int id, String firstName, String lastName, String phoneNumber, User user) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.user = user;
-        this.reservations = reservations;
+
     }
 
     public UserDetails(String firstName, String lastName, String phoneNumber, User user) {

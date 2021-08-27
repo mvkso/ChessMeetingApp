@@ -20,8 +20,10 @@ public class Reservation {
     private LocalDateTime dateTimeFrom;
     private LocalDateTime dateTimeTo;
 
+
     private String subject;
     private String address;
+
 
     private int slotsBooked = 0;
     private int allSlots;

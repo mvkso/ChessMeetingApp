@@ -1,4 +1,4 @@
-package com.example.chessmeetingapp.requests;
+package com.example.chessmeetingapp.requests.signInUp;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

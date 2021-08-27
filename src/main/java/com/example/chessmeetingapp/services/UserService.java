@@ -2,7 +2,7 @@ package com.example.chessmeetingapp.services;
 
 import com.example.chessmeetingapp.entities.User;
 import com.example.chessmeetingapp.repositories.UserRepository;
-import com.example.chessmeetingapp.requests.ChangeUserEmailRequest;
+import com.example.chessmeetingapp.requests.usersData.ChangeUserEmailRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

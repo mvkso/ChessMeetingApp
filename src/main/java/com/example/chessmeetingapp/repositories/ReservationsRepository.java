@@ -15,5 +15,9 @@ public interface ReservationsRepository extends CrudRepository<Reservation, Inte
 
     List<Reservation> findAllByUserCreator_Id(int id);
 
-    Optional<Reservation> findReservationByDateTimeFrom(LocalDateTime localDateTime);
+    List<Reservation> findAllByDateTimeFrom(LocalDateTime localDateTime);
+
+    List<Reservation> findAllByAddress(String address);
+
+
 }

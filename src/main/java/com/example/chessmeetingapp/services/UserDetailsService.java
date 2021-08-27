@@ -5,7 +5,11 @@ import com.example.chessmeetingapp.entities.UserDetails;
 import com.example.chessmeetingapp.entities.UserType;
 import com.example.chessmeetingapp.repositories.UserDetailsRepository;
 import com.example.chessmeetingapp.repositories.UserRepository;
-import com.example.chessmeetingapp.requests.EditUserDetailsRequest;
+import com.example.chessmeetingapp.requests.usersData.EditUserDetailsRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -165,6 +169,13 @@ public class UserDetailsService {
         });
         return isExist.get();
     }
+//
+//    public Page<UserDetails> getUserDetailsByPage(int page, int size){
+//        Pageable usersDetails= PageRequest.of(page, size, Sort.by("lastName").and(Sort.by("firstName")));
+//        return userDetailsRepository.findAll(usersDetails);
+//    }
+
+
 
 
 

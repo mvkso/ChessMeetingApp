@@ -1,4 +1,4 @@
-package com.example.chessmeetingapp.requests;
+package com.example.chessmeetingapp.requests.usersData;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
