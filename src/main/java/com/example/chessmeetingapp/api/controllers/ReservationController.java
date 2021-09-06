@@ -92,8 +92,8 @@ public class ReservationController {
                 .collect(Collectors.toList());
     }
 
-    @DeleteMapping("/{reservationId}/{userId}}")
-    public void cancelResrvation(@PathVariable("reservationId") int reservationId, @PathVariable("userId") int userId){
+    @PutMapping("/{reservationId}/{userId}}")
+    public void cancelReservation(@PathVariable("reservationId") int reservationId, @PathVariable("userId") int userId){
         reservationService.cancelReservation(reservationId, userId)
                 .orElseThrow(() -> new RestException("Unable to cancel reservation"));
     }

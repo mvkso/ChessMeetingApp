@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.*;
 import java.util.*;
 
@@ -21,6 +23,9 @@ public class ReservationService {
     private final UserDetailsRepository userDetailsRepository;
     private final UserService userService;
     private final UserDetailsService userDetailsService;
+
+    @PersistenceContext
+    EntityManager em;
 
     public static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
@@ -81,6 +86,7 @@ public class ReservationService {
             UserDetails userDetails = userDetailsService.getUserDetailsByUserId(userId).get();
             assert reservation != null;
             reservation.getUsersReserved().remove(userDetails);
+            em.merge(reservation);
             return Optional.of(true);
         }catch (Exception e){
             logger.warn("exception in cancelReservation function");
