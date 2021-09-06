@@ -1,7 +1,6 @@
-package com.example.chessmeetingapp.api;
+package com.example.chessmeetingapp.api.controllers;
 
 import com.example.chessmeetingapp.api.response.MessageResponse;
-import com.example.chessmeetingapp.api.response.TimeResponse;
 import com.example.chessmeetingapp.api.response.UserResponse;
 import com.example.chessmeetingapp.entities.User;
 import com.example.chessmeetingapp.requests.usersData.ChangeUserEmailRequest;
@@ -10,11 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;

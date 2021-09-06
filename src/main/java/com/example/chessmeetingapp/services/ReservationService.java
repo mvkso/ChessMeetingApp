@@ -70,6 +70,24 @@ public class ReservationService {
         }
     }
 
+    public Optional<Boolean> cancelReservation(int reservationId, int userId){
+        Reservation reservation = null;
+        try{
+            reservation = reservationsRepository.findById(reservationId).get();
+        }catch (NoSuchElementException e){
+            logger.warn("Exception in cancelReservation function. There might be no reservations with this id!");
+        }
+        try{
+            UserDetails userDetails = userDetailsService.getUserDetailsByUserId(userId).get();
+            assert reservation != null;
+            reservation.getUsersReserved().remove(userDetails);
+            return Optional.of(true);
+        }catch (Exception e){
+            logger.warn("exception in cancelReservation function");
+            return Optional.of(false);
+        }
+    }
+
     private LocalDateTime fromLocalToUTC(LocalDateTime localTime){
         ZonedDateTime currentTimeZone=localTime.atZone(ZoneId.systemDefault());
         return LocalDateTime.ofInstant(Instant.from(currentTimeZone), ZoneOffset.UTC);

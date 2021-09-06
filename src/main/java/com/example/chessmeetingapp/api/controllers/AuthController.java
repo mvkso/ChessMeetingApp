@@ -1,4 +1,4 @@
-package com.example.chessmeetingapp.api;
+package com.example.chessmeetingapp.api.controllers;
 
 import com.example.chessmeetingapp.api.response.JwtResponse;
 import com.example.chessmeetingapp.api.response.MessageResponse;
