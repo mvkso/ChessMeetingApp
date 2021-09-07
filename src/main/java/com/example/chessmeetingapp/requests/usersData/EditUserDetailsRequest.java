@@ -33,10 +33,7 @@ public record EditUserDetailsRequest(
 
         @NotBlank
         @JsonProperty("newPhoneNumber")
-        String newPhoneNumber,
+        String newPhoneNumber
 
-        @NotBlank
-        @JsonProperty("region")
-        String region
 ) {
 }
