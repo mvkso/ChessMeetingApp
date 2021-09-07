@@ -92,10 +92,16 @@ public class ReservationController {
                 .collect(Collectors.toList());
     }
 
-    @PutMapping("/{reservationId}/{userId}}")
+    @PutMapping("/{reservationId}/{userId}}/cancel")
     public void cancelReservation(@PathVariable("reservationId") int reservationId, @PathVariable("userId") int userId){
         reservationService.cancelReservation(reservationId, userId)
                 .orElseThrow(() -> new RestException("Unable to cancel reservation"));
+    }
+
+    @PutMapping("/{reservationId}/{userId}/book")
+    public void bookReservation(@PathVariable("reservationId") int reservationId, @PathVariable("userId") int userId){
+        reservationService.bookReservation(reservationId,userId)
+                .orElseThrow(()-> new RestException("Unable to book reservation"));
     }
 
 

@@ -37,19 +37,20 @@ public class ReservationService {
         this.userDetailsService = userDetailsService;
     }
 
-    public Optional<Reservation> createReservation(CreateReservationRequest request){
+    public Optional<Boolean> createReservation(CreateReservationRequest request){
         UserDetails userDetails;
         Reservation reservation;
         try{
             userDetails = userDetailsService.getUserDetailsByUserId(request.userId()).get();
 
         }catch (NoSuchElementException e){
-            return Optional.empty();
+            return Optional.of(true);
         }
         try{
             reservation = new Reservation(userDetails,request.timeFrom(), request.timeTo(), request.Subject(), request.Address(), request.Slots());
+            reservation.getUsersReserved().add(userDetails);
             reservationsRepository.save(reservation);
-            return Optional.of(reservation);
+            return Optional.of(false);
         }catch (Exception e){
             return Optional.empty();
         }
@@ -90,6 +91,22 @@ public class ReservationService {
             return Optional.of(true);
         }catch (Exception e){
             logger.warn("exception in cancelReservation function");
+            return Optional.of(false);
+        }
+    }
+
+    public Optional<Boolean> bookReservation(int reservationId, int userId){
+        try{
+            Reservation reservation = reservationsRepository.findById(reservationId).get();
+            UserDetails userDetails = userDetailsService.getUserDetailsByUserId(userId).get();
+            reservation.getUsersReserved().add(userDetails);
+            em.merge(reservation);
+            return Optional.of(true);
+        }catch (NoSuchElementException ex){
+            logger.warn("No such element exception in bookReservation function");
+            return Optional.of(false);
+        }catch (Exception ex){
+            logger.warn("Exception in bookReservation function");
             return Optional.of(false);
         }
     }
@@ -182,6 +199,8 @@ public class ReservationService {
 
         return pastReservations;
     }
+
+
 
 
 
