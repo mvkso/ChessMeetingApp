@@ -109,7 +109,7 @@ public class UserDetailsController {
 //    @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("/{userDetailsId}")
     @Transactional
-    public ResponseEntity<?> updateEmployee(@Valid @RequestBody EditUserDetailsRequest editUserDetailsRequest,
+    public ResponseEntity<?> updateUserDetails(@Valid @RequestBody EditUserDetailsRequest editUserDetailsRequest,
                                             @PathVariable int userDetailsId) {
 
         if (newEmailAlreadyExists(editUserDetailsRequest)) {
