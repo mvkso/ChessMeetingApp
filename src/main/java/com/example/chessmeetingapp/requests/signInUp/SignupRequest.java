@@ -30,7 +30,7 @@ public class SignupRequest {
     private String phoneNumber;
 
     private String userType;
-    
+
 
     public SignupRequest(){
     }
