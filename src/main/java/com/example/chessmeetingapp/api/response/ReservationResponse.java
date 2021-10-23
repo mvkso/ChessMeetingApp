@@ -13,7 +13,8 @@ public record ReservationResponse(
         @JsonProperty("dateTimeFrom") LocalDateTime dateTimeFrom,
         @JsonProperty("dateTimeTo") LocalDateTime dateTimeTo,
         @JsonProperty("subject") String subject,
-        @JsonProperty("address") String address,
+        @JsonProperty("cityAddress") String cityAddress,
+        @JsonProperty("minimumRank") int minimumRank,
         @JsonProperty("slotsBooked") int slotsBooked,
         @JsonProperty("allSlots") int allSlots,
         @JsonProperty("usersReserved") Set<UserDetails> userDetailsSet
@@ -25,7 +26,8 @@ public record ReservationResponse(
                 reservation.getDateTimeFrom(),
                 reservation.getDateTimeTo(),
                 reservation.getSubject(),
-                reservation.getAddress(),
+                reservation.getCityAddress(),
+                reservation.getMinimumRank(),
                 reservation.getSlotsBooked(),
                 reservation.getAllSlots(),
                 reservation.getUsersReserved()

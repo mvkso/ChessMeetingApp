@@ -9,7 +9,8 @@ public record CreateReservationRequest(
         @JsonProperty("DateTimeFrom") LocalDateTime timeFrom,
         @JsonProperty("DateTimeTo") LocalDateTime timeTo,
         @JsonProperty("Subject") String Subject,
-        @JsonProperty("Address") String Address,
+        @JsonProperty("CityAddress") String CityAddress,
+        @JsonProperty("MinimumRank") int MinimumRank,
         @JsonProperty("Slots") int Slots
 ) {
 }

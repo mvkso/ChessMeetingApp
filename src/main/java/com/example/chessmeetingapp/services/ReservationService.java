@@ -47,7 +47,7 @@ public class ReservationService {
             return Optional.of(true);
         }
         try{
-            reservation = new Reservation(userDetails,request.timeFrom(), request.timeTo(), request.Subject(), request.Address(), request.Slots());
+            reservation = new Reservation(userDetails,request.timeFrom(), request.timeTo(), request.Subject(), request.CityAddress(), request.MinimumRank(), request.Slots());
             reservation.getUsersReserved().add(userDetails);
             reservationsRepository.save(reservation);
             return Optional.of(false);

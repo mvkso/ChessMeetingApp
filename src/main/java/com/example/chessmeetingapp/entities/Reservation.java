@@ -22,7 +22,9 @@ public class Reservation {
 
 
     private String subject;
-    private String address;
+    private String cityAddress;
+
+    private int minimumRank;
 
 
     private int slotsBooked = 0;
@@ -35,12 +37,13 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(UserDetails userCreator, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo, String subject, String address, int allSlots) {
+    public Reservation(UserDetails userCreator, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo, String subject, String cityAddress, int minimumRank, int allSlots) {
         this.userCreator = userCreator;
         this.dateTimeFrom = dateTimeFrom;
         this.dateTimeTo = dateTimeTo;
         this.subject = subject;
-        this.address = address;
+        this.cityAddress = cityAddress;
+        this.minimumRank = minimumRank;
         this.allSlots = allSlots;
     }
 
@@ -84,12 +87,20 @@ public class Reservation {
         this.subject = subject;
     }
 
-    public String getAddress() {
-        return address;
+    public String getCityAddress() {
+        return cityAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCityAddress(String address) {
+        this.cityAddress = address;
+    }
+
+    public int getMinimumRank() {
+        return minimumRank;
+    }
+
+    public void setMinimumRank(int minimumRank) {
+        this.minimumRank = minimumRank;
     }
 
     public int getSlotsBooked() {
