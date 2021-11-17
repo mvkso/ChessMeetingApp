@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 @Repository
 public interface ReservationsRepository extends CrudRepository<Reservation, Integer> {
 
@@ -17,7 +16,7 @@ public interface ReservationsRepository extends CrudRepository<Reservation, Inte
 
     List<Reservation> findAllByDateTimeFrom(LocalDateTime localDateTime);
 
-    List<Reservation> findAllByAddress(String address);
+    List<Reservation> findAllByCityAddress(String address);
 
 
 }

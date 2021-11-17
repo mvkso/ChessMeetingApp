@@ -44,8 +44,9 @@ public class AuthController implements InitializingBean {
     private void createInitialAdminAccount(){
 
         if(!userDetailsService.isAdminExist()){
-            userService.save(new User(adminDefaultEmail,
-                    encoder.encode(adminDefaultPassword)));
+            User user = new User(adminDefaultEmail,encoder.encode(adminDefaultPassword));
+            user.setUserType(UserType.ADMIN);
+            userService.save(user);
         }
     }
 

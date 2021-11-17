@@ -152,7 +152,7 @@ public class ReservationService {
     public List<Reservation> getAllReservationsByCity(String address){
         List<Reservation> reservationsList;
         try {
-            reservationsList = reservationsRepository.findAllByAddress(address);
+            reservationsList = reservationsRepository.findAllByCityAddress(address);
             return reservationsList;
         }catch (NoSuchElementException ex){
             logger.warn("exception in getAllReservationsByCity function");
