@@ -1,5 +1,7 @@
 package com.example.chessmeetingapp.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -15,6 +17,7 @@ public class Reservation {
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "userCreator")
+    @JsonBackReference
     private UserDetails userCreator;
 
     private LocalDateTime dateTimeFrom;
@@ -30,7 +33,8 @@ public class Reservation {
     private int slotsBooked = 0;
     private int allSlots;
 
-    @ManyToMany(mappedBy = "reservations")
+    @ManyToMany(mappedBy = "reservations", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Set<UserDetails> usersReserved = new HashSet<>();
 
 

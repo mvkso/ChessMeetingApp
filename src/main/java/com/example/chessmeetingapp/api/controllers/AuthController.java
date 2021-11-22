@@ -68,7 +68,6 @@ public class AuthController implements InitializingBean {
     @CrossOrigin
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody SigninRequest loginRequest){
-        System.out.println("remove this !");
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(

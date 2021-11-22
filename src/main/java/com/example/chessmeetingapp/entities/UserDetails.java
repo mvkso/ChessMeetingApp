@@ -1,5 +1,7 @@
 package com.example.chessmeetingapp.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,11 +29,13 @@ public class UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "reservation_id")
     )
+    @JsonManagedReference
     private Set<Reservation> reservations = new HashSet<>();
 
 
 
-    @OneToMany(mappedBy = "userCreator", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userCreator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Set<Reservation> createdReservations;
 
 

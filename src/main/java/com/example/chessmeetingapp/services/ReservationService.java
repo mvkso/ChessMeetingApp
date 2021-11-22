@@ -49,6 +49,10 @@ public class ReservationService {
         try{
             reservation = new Reservation(userDetails,request.timeFrom(), request.timeTo(), request.Subject(), request.CityAddress(), request.MinimumRank(), request.Slots());
             reservation.getUsersReserved().add(userDetails);
+            userDetails.getCreatedReservations().add(reservation);
+            System.out.println(userDetails+"\n"+reservation);
+
+            System.out.println(request.timeFrom()+" "+ request.timeTo());
             reservationsRepository.save(reservation);
             return Optional.of(false);
         }catch (Exception e){
@@ -126,15 +130,18 @@ public class ReservationService {
         return reservationsRepository.findById(Id);
     }
 
-    public Set<Reservation> getAllCreatedReservations(int userId){
+    public List<Reservation> getAllCreatedReservations(int userId){
+        var result = new ArrayList<Reservation>();
         UserDetails userDetails;
         try{
-            userDetails = userDetailsRepository.findUserDetailsByUser_UserId(userId).get();
+            userDetails = userDetailsRepository.findById(userId).get();
+            reservationsRepository.findAllByUserCreator(userDetails).forEach(result::add);
+
         }catch(NoSuchElementException e){
             logger.warn("no user with id "+userId);
-            return Set.of();
+            return List.of();
         }
-        return userDetails.getCreatedReservations();
+        return result;
     }
 
 

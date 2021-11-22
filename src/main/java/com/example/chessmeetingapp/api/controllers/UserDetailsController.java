@@ -68,7 +68,7 @@ public class UserDetailsController {
     @GetMapping("/")
     //@PreAuthorize("hasAuthority('Admin') or hasAuthority('User')")
     public List<UserDetailsResponse> getAllEmployees(){
-
+        System.out.println(userDetailsService.getUsersDetails());
         return userDetailsService.getUsersDetails()
                 .stream()
                 .map(UserDetailsResponse::fromUserDetails)

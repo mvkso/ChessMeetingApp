@@ -58,6 +58,7 @@ public class ReservationController {
 
     @GetMapping("/{reservationId}")
     public Reservation getReservationById(@PathVariable("reservationId") int Id){
+        System.out.println(reservationService.getReservationById(Id));
         return reservationService.getReservationById(Id).get();
     }
 
