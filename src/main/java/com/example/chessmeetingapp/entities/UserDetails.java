@@ -1,5 +1,6 @@
 package com.example.chessmeetingapp.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
@@ -25,17 +26,17 @@ public class UserDetails {
             cascade = {CascadeType.MERGE, CascadeType.PERSIST}
     )
     @JoinTable(
-            name = "users_reservations",
-            joinColumns = @JoinColumn(name = "user_id"),
+            name = "booked_reservations",
+            joinColumns = @JoinColumn(name = "userDetails_id"),
             inverseJoinColumns = @JoinColumn(name = "reservation_id")
     )
-    @JsonManagedReference
-    private Set<Reservation> reservations = new HashSet<>();
+    @JsonBackReference
+    private Set<Reservation> bookedReservations;
 
 
 
     @OneToMany(mappedBy = "userCreator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonBackReference
     private Set<Reservation> createdReservations;
 
 
@@ -57,6 +58,16 @@ public class UserDetails {
         this.phoneNumber = phoneNumber;
         this.user = user;
     }
+
+    public void addBookedReservation(Reservation reservation){
+        this.bookedReservations.add(reservation);
+    }
+
+    public void removeBookedReservation(Reservation reservation){
+        this.bookedReservations.remove(reservation);
+    }
+
+
 
     public int getId() {
         return id;
@@ -99,11 +110,11 @@ public class UserDetails {
     }
 
     public Set<Reservation> getReservations() {
-        return reservations;
+        return bookedReservations;
     }
 
     public void setReservations(Set<Reservation> reservations) {
-        this.reservations = reservations;
+        this.bookedReservations = reservations;
     }
 
     public Set<Reservation> getCreatedReservations() {
@@ -122,7 +133,7 @@ public class UserDetails {
                 ", lastName='" + lastName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", user=" + user +
-                ", reservations=" + reservations +
+                ", reservations=" + bookedReservations +
                 '}';
     }
 }

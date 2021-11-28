@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -47,7 +48,7 @@ public class ReservationService {
             return Optional.of(true);
         }
         try{
-            reservation = new Reservation(userDetails,request.timeFrom(), request.timeTo(), request.Subject(), request.CityAddress(), request.MinimumRank(), request.Slots());
+            reservation = new Reservation(userDetails,request.timeFrom(), request.timeTo(), request.Subject(), request.CityAddress().toLowerCase(Locale.ROOT), request.MinimumRank(), request.Slots());
             reservation.getUsersReserved().add(userDetails);
             userDetails.getCreatedReservations().add(reservation);
             System.out.println(userDetails+"\n"+reservation);
@@ -60,6 +61,7 @@ public class ReservationService {
         }
 
     }
+
 
     @Transactional
     public Optional<Boolean> deleteReservation(int reservationId){
@@ -90,27 +92,33 @@ public class ReservationService {
         try{
             UserDetails userDetails = userDetailsService.getUserDetailsByUserId(userId).get();
             assert reservation != null;
-            reservation.getUsersReserved().remove(userDetails);
-            em.merge(reservation);
+            userDetails.removeBookedReservation(reservation);
+            reservation.setSlotsBooked(reservation.getSlotsBooked()-1);
+            em.merge(userDetails);
             return Optional.of(true);
         }catch (Exception e){
             logger.warn("exception in cancelReservation function");
             return Optional.of(false);
         }
     }
-
+    @Transactional
     public Optional<Boolean> bookReservation(int reservationId, int userId){
         try{
             Reservation reservation = reservationsRepository.findById(reservationId).get();
             UserDetails userDetails = userDetailsService.getUserDetailsByUserId(userId).get();
-            reservation.getUsersReserved().add(userDetails);
-            em.merge(reservation);
-            return Optional.of(true);
+            if(userDetails.getId() == reservation.getUserCreator().getId()){
+                logger.warn("Cannot book event id:"+reservation.getId()+" by userDetails id: "+userDetails.getId());
+                return Optional.of(false);
+            }else {
+                if(reservation.getAllSlots() > reservation.getSlotsBooked() && !userDetails.getCreatedReservations().contains(reservation)) {
+                    reservation.setSlotsBooked(reservation.getSlotsBooked()+1);
+                    userDetails.addBookedReservation(reservation);
+                    em.merge(userDetails);
+                    return Optional.of(true);
+                }else return Optional.of(false);
+            }
         }catch (NoSuchElementException ex){
             logger.warn("No such element exception in bookReservation function");
-            return Optional.of(false);
-        }catch (Exception ex){
-            logger.warn("Exception in bookReservation function");
             return Optional.of(false);
         }
     }
@@ -130,13 +138,15 @@ public class ReservationService {
         return reservationsRepository.findById(Id);
     }
 
+
+
     public List<Reservation> getAllCreatedReservations(int userId){
         var result = new ArrayList<Reservation>();
         UserDetails userDetails;
         try{
             userDetails = userDetailsRepository.findById(userId).get();
-            reservationsRepository.findAllByUserCreator(userDetails).forEach(result::add);
-
+//            reservationsRepository.findAllByUserCreator(userDetails).forEach(result::add);
+            userDetails.getCreatedReservations().forEach(result::add);
         }catch(NoSuchElementException e){
             logger.warn("no user with id "+userId);
             return List.of();
@@ -145,21 +155,42 @@ public class ReservationService {
     }
 
 
-    public Set<Reservation> getAllBookedReservations(int userId){
+    public List<Reservation> getAllBookedReservations(int userId){
+        var result = new ArrayList<Reservation>();
         UserDetails userDetails;
         try{
-            userDetails = userDetailsRepository.findUserDetailsByUser_UserId(userId).get();
+            userDetails = userDetailsRepository.findById(userId).get();
+            userDetails.getReservations().forEach(result::add);
         }catch(NoSuchElementException e){
             logger.warn("no user with id "+userId);
-            return Set.of();
+            return List.of();
         }
-        return userDetails.getReservations();
+
+        return result;
     }
 
-    public List<Reservation> getAllReservationsByCity(String address){
+    public List<Reservation> getAllReservationsByCityAddress(String cityAddress, int id){
         List<Reservation> reservationsList;
+        UserDetails userDetails;
         try {
-            reservationsList = reservationsRepository.findAllByCityAddress(address);
+            userDetails = userDetailsRepository.findUserDetailsByUser_UserId(id).get();
+            reservationsList = reservationsRepository.findAllByCityAddress(cityAddress.toLowerCase(Locale.ROOT));
+
+            Iterator<Reservation> i = reservationsList.iterator();
+            while (i.hasNext()) {
+                Reservation reservation = i.next();
+                if(reservation.getUserCreator().equals(userDetails) || reservation.getUsersReserved().contains(userDetails)){
+                    i.remove();
+                }
+            }
+//                    .forEach(reservation -> {
+//                        if(reservation.getUserCreator().equals(userDetails) || reservation.getUsersReserved().contains(userDetails)){
+//
+//                        }
+//                    });
+
+
+
             return reservationsList;
         }catch (NoSuchElementException ex){
             logger.warn("exception in getAllReservationsByCity function");
@@ -168,8 +199,6 @@ public class ReservationService {
             logger.warn("exception in getAllReservationsByCity function");
             return List.of();
         }
-
-
 
     }
 

@@ -33,7 +33,7 @@ public class Reservation {
     private int slotsBooked = 0;
     private int allSlots;
 
-    @ManyToMany(mappedBy = "reservations", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "bookedReservations", fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<UserDetails> usersReserved = new HashSet<>();
 

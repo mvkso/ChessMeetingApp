@@ -5,6 +5,7 @@ import com.example.chessmeetingapp.api.response.ReservationResponse;
 import com.example.chessmeetingapp.api.response.UserDetailsResponse;
 import com.example.chessmeetingapp.entities.Reservation;
 import com.example.chessmeetingapp.error.RestException;
+import com.example.chessmeetingapp.requests.reservation.BookReservation;
 import com.example.chessmeetingapp.requests.reservation.CreateReservationRequest;
 import com.example.chessmeetingapp.services.ReservationService;
 import com.example.chessmeetingapp.services.UserDetailsService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.Valid;
 import java.lang.module.ResolutionException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -91,22 +93,31 @@ public class ReservationController {
 
     @GetMapping("/{reservationId}/bookedUsers")
     public List<UserDetailsResponse> getAllUsersFromReservation(@PathVariable("reservationId") int Id){
-
+        System.out.println("HALOOOOO "+reservationService.getReservationById(Id).get().getUsersReserved());
         return reservationService.getReservationById(Id).get().getUsersReserved()
                 .stream().map(UserDetailsResponse::fromUserDetails)
                 .collect(Collectors.toList());
     }
 
-    @PutMapping("/{reservationId}/{userId}}/cancel")
+    @GetMapping("/city/{cityAddress}/user/{userId}")
+    public List<ReservationResponse> getAllReservationsByCityAddress(@PathVariable("cityAddress") String cityAddress, @PathVariable("userId") int userId){
+
+        return reservationService.getAllReservationsByCityAddress(cityAddress,userId)
+                .stream().map(ReservationResponse::fromReservation)
+                .collect(Collectors.toList());
+    }
+
+    @PutMapping("/{reservationId}/{userId}/cancel")
     public void cancelReservation(@PathVariable("reservationId") int reservationId, @PathVariable("userId") int userId){
         reservationService.cancelReservation(reservationId, userId)
                 .orElseThrow(() -> new RestException("Unable to cancel reservation"));
     }
 
-    @PutMapping("/{reservationId}/{userId}/book")
-    public void bookReservation(@PathVariable("reservationId") int reservationId, @PathVariable("userId") int userId){
-        reservationService.bookReservation(reservationId,userId)
+    @PutMapping("/book/{reservationId}")
+    public ResponseEntity<?>  bookReservation(@Valid @RequestBody BookReservation reservation, @PathVariable("reservationId") int reservationId){
+        reservationService.bookReservation(reservation.reservationId(), reservation.userId())
                 .orElseThrow(()-> new RestException("Unable to book reservation"));
+        return ResponseEntity.ok(new MessageResponse("Reservation booked"));
     }
 
 

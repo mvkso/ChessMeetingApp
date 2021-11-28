@@ -3,6 +3,7 @@ package com.example.chessmeetingapp.api.controllers;
 
 import com.example.chessmeetingapp.api.response.MessageResponse;
 import com.example.chessmeetingapp.api.response.UserDetailsResponse;
+import com.example.chessmeetingapp.entities.Reservation;
 import com.example.chessmeetingapp.entities.UserDetails;
 import com.example.chessmeetingapp.error.RestException;
 import com.example.chessmeetingapp.requests.usersData.ChangePasswordRequest;
@@ -92,6 +93,7 @@ public class UserDetailsController {
 //    @PreAuthorize("hasAuthority('Admin')")
     @Transactional
     public UserDetailsResponse getUserDetailsById(@PathVariable("userDetailsId") int userDatailsId){
+        System.out.println(userDetailsService.getUserDetailsById(userDatailsId).get().getCreatedReservations().toString());
         return userDetailsService.getUserDetailsById(userDatailsId)
                 .map(UserDetailsResponse::fromUserDetails)
                 .orElseThrow(() -> new RestException("Unable to get employee by employeeId=" + userDatailsId));
