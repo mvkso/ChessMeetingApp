@@ -81,26 +81,38 @@ public class ReservationService {
             return Optional.of(false);
         }
     }
-
-    public Optional<Boolean> cancelReservation(int reservationId, int userId){
-        Reservation reservation = null;
-        try{
-            reservation = reservationsRepository.findById(reservationId).get();
-        }catch (NoSuchElementException e){
-            logger.warn("Exception in cancelReservation function. There might be no reservations with this id!");
-        }
-        try{
+    @Transactional
+    public Optional<Boolean> cancelReservation(int reservationId, int userId) {
+        try {
+            Reservation reservation = reservationsRepository.findById(reservationId).get();
             UserDetails userDetails = userDetailsService.getUserDetailsByUserId(userId).get();
-            assert reservation != null;
-            userDetails.removeBookedReservation(reservation);
-            reservation.setSlotsBooked(reservation.getSlotsBooked()-1);
-            em.merge(userDetails);
-            return Optional.of(true);
-        }catch (Exception e){
-            logger.warn("exception in cancelReservation function");
+            if (userDetails.getId() == reservation.getUserCreator().getId()) {
+                for(UserDetails userDetailsReservation : reservation.getUsersReserved()){
+                    userDetailsReservation.removeBookedReservation(reservation);
+                    em.merge(userDetailsReservation);
+                }
+                userDetails.getCreatedReservations().remove(reservation);
+                em.merge(userDetails);
+                reservationsRepository.delete(reservation);
+                logger.warn("event id:" + reservation.getId() + " will be deleted by userDetails id: " + userDetails.getId());
+                return Optional.of(true);
+            } else {
+                if (reservation.getUsersReserved().contains(userDetails)) {
+                    reservation.setSlotsBooked(reservation.getSlotsBooked() - 1);
+                    userDetails.removeBookedReservation(reservation);
+                    em.merge(userDetails);
+                    return Optional.of(true);
+                } else return Optional.of(false);
+            }
+        } catch (NoSuchElementException ex) {
+            logger.warn("No such element exception in cancel function");
+            return Optional.of(false);
+        } catch (Exception ex) {
+            logger.warn("exception in cancel function");
             return Optional.of(false);
         }
     }
+
     @Transactional
     public Optional<Boolean> bookReservation(int reservationId, int userId){
         try{

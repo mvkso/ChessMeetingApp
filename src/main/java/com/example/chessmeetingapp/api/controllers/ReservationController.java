@@ -107,10 +107,11 @@ public class ReservationController {
                 .collect(Collectors.toList());
     }
 
-    @PutMapping("/{reservationId}/{userId}/cancel")
-    public void cancelReservation(@PathVariable("reservationId") int reservationId, @PathVariable("userId") int userId){
-        reservationService.cancelReservation(reservationId, userId)
+    @PutMapping("/cancel/{reservationId}")
+    public ResponseEntity<?>  cancelReservation(@Valid @RequestBody BookReservation reservation, @PathVariable("reservationId") int reservationId){
+        reservationService.cancelReservation(reservation.reservationId(), reservation.userId())
                 .orElseThrow(() -> new RestException("Unable to cancel reservation"));
+        return ResponseEntity.ok(new MessageResponse("Reservation cancel or deleted"));
     }
 
     @PutMapping("/book/{reservationId}")

@@ -10,9 +10,9 @@ import java.util.Set;
 public record ReservationResponse(
         @JsonProperty("Id") int Id,
         @JsonProperty("userCreator") int userCreatorId,
-        @JsonProperty("dateTimeFrom") LocalDateTime dateTimeFrom,
-        @JsonProperty("dateTimeTo") LocalDateTime dateTimeTo,
-        @JsonProperty("subject") String subject,
+        @JsonProperty("StartTime") LocalDateTime dateTimeFrom,
+        @JsonProperty("EndTime") LocalDateTime dateTimeTo,
+        @JsonProperty("Subject") String subject,
         @JsonProperty("cityAddress") String cityAddress,
         @JsonProperty("minimumRank") int minimumRank,
         @JsonProperty("slotsBooked") int slotsBooked,
