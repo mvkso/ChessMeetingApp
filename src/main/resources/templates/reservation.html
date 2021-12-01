@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+        name="viewport">
+  <meta content="ie=edge" http-equiv="X-UA-Compatible">
+  <title>Spring Boot - Thymeleaf</title>
+  <link th:href="@{/main.css}" rel="stylesheet"/>
+</head>
+<body class="flex items-center justify-center h-screen">
+<div class="rounded-lg border shadow-lg p-10 w-3/5">
+  <div class="flex flex-row justify-between pb-4">
+    <div>
+      <h2 class="text-xl font-bold">Reservation #<span class="text-green-600" th:text="${reservation.id}"></span>
+      </h2>
+    </div>
+    <div>
+      <div class="text-xl font-bold" th:text="${'When: '+reservation.dateTimeFrom}"></div>
+      <div class="text-xl font-bold" th:text="${'To: '+reservation.dateTimeTo}"></div>
+    </div>
+  </div>
+  <div class="flex flex-col pb-8">
+    <h2 class="text-xl font-bold">Meeting Details</h2>
+    <table class="table-fixed text-left w-2/6 border">
+      <tr>
+        <th class="text-green-600">Founder</th>
+        <td th:text="${reservation.userCreator.firstName+' '+reservation.userCreator.lastName}"></td>
+      </tr>
+      <tr>
+        <th class="text-green-600">City</th>
+        <td th:text="${reservation.cityAddress}"></td>
+      </tr>
+      <tr>
+        <th class="text-green-600">Subject</th>
+        <td th:text="${reservation.subject}"></td>
+      </tr>
+      <tr>
+        <th class="text-green-600">Minimum rank</th>
+        <td th:text="${reservation.minimumRank}"></td>
+      </tr>
+      <tr>
+        <th class="text-green-600">Slots</th>
+        <td th:text="${reservation.slotsBooked+'/'+reservation.allSlots}"></td>
+      </tr>
+    </table>
+
+  </div>
+  <table class="table-fixed w-full text-right border rounded">
+    <thead class="bg-gray-100">
+    <tr>
+      <th class="text-left pl-4">name</th>
+      <th>last name</th>
+      <th class="pr-4">phone number</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${reservation.usersReserved}">
+      <td class="pl-4 text-left" th:text="${item.firstName}"></td>
+      <td th:text="${item.lastName}"></td>
+      <td th:text="${item.phoneNumber}"></td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>
