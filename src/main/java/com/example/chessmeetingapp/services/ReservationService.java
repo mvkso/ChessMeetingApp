@@ -51,9 +51,6 @@ public class ReservationService {
             reservation = new Reservation(userDetails,request.timeFrom(), request.timeTo(), request.Subject(), request.CityAddress().toLowerCase(Locale.ROOT), request.MinimumRank(), request.Slots());
             reservation.getUsersReserved().add(userDetails);
             userDetails.getCreatedReservations().add(reservation);
-            System.out.println(userDetails+"\n"+reservation);
-
-            System.out.println(request.timeFrom()+" "+ request.timeTo());
             reservationsRepository.save(reservation);
             return Optional.of(false);
         }catch (Exception e){

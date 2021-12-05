@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -38,6 +39,14 @@ public class UserDetails {
     @OneToMany(mappedBy = "userCreator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Reservation> createdReservations;
+
+    @OneToMany(mappedBy = "userCreator")
+    @JsonBackReference
+    private List<Topic> topics;
+
+    @OneToMany(mappedBy = "userCreator")
+    @JsonBackReference
+    private List<Answer> answers;
 
 
     public UserDetails() {
@@ -123,6 +132,30 @@ public class UserDetails {
 
     public void setCreatedReservations(Set<Reservation> createdReservations) {
         this.createdReservations = createdReservations;
+    }
+
+    public Set<Reservation> getBookedReservations() {
+        return bookedReservations;
+    }
+
+    public void setBookedReservations(Set<Reservation> bookedReservations) {
+        this.bookedReservations = bookedReservations;
+    }
+
+    public List<Topic> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(List<Topic> topics) {
+        this.topics = topics;
+    }
+
+    public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
     }
 
     @Override
