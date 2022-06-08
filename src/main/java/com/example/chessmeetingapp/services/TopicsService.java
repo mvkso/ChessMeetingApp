@@ -42,7 +42,7 @@ public class TopicsService {
     public List<Topic> getAllTopics(){
         var result = new ArrayList<Topic>();
         try{
-            topicRepository.findAll().forEach(result::add);
+            topicRepository.findAllByOrderByCreatedDateDesc().forEach(result::add);
         }catch(NoSuchElementException e){
             logger.warn("get all topics error ");
             return List.of();

@@ -19,7 +19,7 @@ public class UserDetails {
     private String lastName;
     private String phoneNumber;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.ALL, CascadeType.REMOVE})
     @JoinColumn(name = "userId")
     private User user;
 
@@ -40,11 +40,11 @@ public class UserDetails {
     @JsonBackReference
     private Set<Reservation> createdReservations;
 
-    @OneToMany(mappedBy = "userCreator")
+    @OneToMany(mappedBy = "userCreator", cascade = CascadeType.REMOVE)
     @JsonBackReference
     private List<Topic> topics;
 
-    @OneToMany(mappedBy = "userCreator")
+    @OneToMany(mappedBy = "userCreator", cascade = CascadeType.REMOVE)
     @JsonBackReference
     private List<Answer> answers;
 

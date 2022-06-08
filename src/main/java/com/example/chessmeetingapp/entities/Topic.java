@@ -2,6 +2,7 @@ package com.example.chessmeetingapp.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.Cascade;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -37,8 +38,9 @@ public class Topic {
     @JsonBackReference
     private UserDetails userCreator;
 
-    @OneToMany(mappedBy = "topic")
+    @OneToMany(mappedBy = "topic", cascade = CascadeType.REMOVE)
     @JsonManagedReference
+    //@Cascade(org.hibernate.annotations.CascadeType.DELETE)
     private List<Answer> answers;
 
     public Topic() {

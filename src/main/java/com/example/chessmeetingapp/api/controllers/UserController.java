@@ -54,10 +54,8 @@ public class UserController {
     //@PreAuthorize("hasAuthority('Admin') or hasAuthority('Employee')")
     @Transactional
     public ResponseEntity<?> updateUser(@PathVariable Integer userId, @RequestBody ChangeUserEmailRequest request) {
-        System.out.println("update User was called.");
         try{
             User updatedUser = userService.findUserById(userId).get();
-            System.out.println("Email: "+request.email());
             userService.updateEmail(updatedUser, request);
             return ResponseEntity.ok(new MessageResponse("Email updated successfully!"));
 

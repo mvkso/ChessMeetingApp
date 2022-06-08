@@ -1,8 +1,6 @@
 package com.example.chessmeetingapp.services;
 
-import com.example.chessmeetingapp.entities.User;
-import com.example.chessmeetingapp.entities.UserDetails;
-import com.example.chessmeetingapp.entities.UserType;
+import com.example.chessmeetingapp.entities.*;
 import com.example.chessmeetingapp.repositories.UserDetailsRepository;
 import com.example.chessmeetingapp.repositories.UserRepository;
 import com.example.chessmeetingapp.requests.usersData.EditUserDetailsRequest;
@@ -26,14 +24,16 @@ public class UserDetailsService {
 
     private UserDetailsRepository userDetailsRepository;
     private UserRepository userRepository;
+    private final LogService logService;
 
 
     @PersistenceContext
     EntityManager em;
 
-    public UserDetailsService(UserDetailsRepository userDetailsRepository, UserRepository userRepository) {
+    public UserDetailsService(UserDetailsRepository userDetailsRepository, UserRepository userRepository, LogService logService) {
         this.userDetailsRepository = userDetailsRepository;
         this.userRepository = userRepository;
+        this.logService = logService;
     }
 
     public List<UserDetails> getUsersDetails(){
@@ -57,6 +57,7 @@ public class UserDetailsService {
         userDetails.getUser().setEmail(request.newEmail());
         try{
             em.merge(userDetails);
+            logService.saveLog(new Log(LogType.INFO, "Object UserDetails of id "+employeeId+ " has been edited"));
             return Optional.of(true);
         }catch (Exception e){
             return Optional.of(false);
@@ -87,7 +88,9 @@ public class UserDetailsService {
     }
 
     public void save(UserDetails userDetails) {
+
         userDetailsRepository.save(userDetails);
+        logService.saveLog(new Log(LogType.INFO, "Object UserDetails of id "+userDetails.getId()+ " has been saved"));
     }
 
     @Transactional
@@ -101,6 +104,7 @@ public class UserDetailsService {
         user.setPassword(password);
         try {
             em.merge(user);
+            logService.saveLog(new Log(LogType.INFO, "User of id "+userId+ " has changed password"));
             return Optional.of(true);
         } catch (Exception e) {
             return Optional.of(false);
@@ -111,6 +115,8 @@ public class UserDetailsService {
         public void changePhoneNumber(String phoneNumber, int Id) throws NoSuchElementException {
             UserDetails userDetails = userDetailsRepository.findUserDetailsByUser_UserId(Id).get();
             userDetails.setPhoneNumber(phoneNumber);
+            em.merge(userDetails);
+            logService.saveLog(new Log(LogType.INFO, "User of id "+Id+ " has changed phone number"));
         }
 
 
@@ -120,6 +126,7 @@ public class UserDetailsService {
         UserDetails userDetails;
         try {
             userDetails = userDetailsRepository.findUserDetailsByUser_UserId(Id).get();
+            logService.saveLog(new Log(LogType.INFO, "User of id "+Id+ " has changed phone number"));
 
         } catch (NoSuchElementException e) {
             return;
@@ -133,6 +140,7 @@ public class UserDetailsService {
         UserDetails userDetails;
         try {
             userDetails = userDetailsRepository.findUserDetailsByUser_UserId(Id).get();
+            logService.saveLog(new Log(LogType.INFO, "User of id "+Id+ " has changed last name"));
 
         } catch (NoSuchElementException e) {
             return;
@@ -169,11 +177,29 @@ public class UserDetailsService {
         });
         return isExist.get();
     }
-//
-//    public Page<UserDetails> getUserDetailsByPage(int page, int size){
-//        Pageable usersDetails= PageRequest.of(page, size, Sort.by("lastName").and(Sort.by("firstName")));
-//        return userDetailsRepository.findAll(usersDetails);
-//    }
+
+    public Page<UserDetails> getUserDetailsByPage(int page, int size){
+        Pageable usersDetails= PageRequest.of(page, size, Sort.by("lastName").and(Sort.by("firstName")));
+        return userDetailsRepository.findAll(usersDetails);
+    }
+
+    @Transactional
+    public Optional<Boolean> deleteUserDetails(int userDetailsId) {
+        UserDetails userDetails;
+        try {
+            userDetails = userDetailsRepository.findById(userDetailsId).get();
+
+        } catch (NoSuchElementException e) {
+            return Optional.of(false);
+        }
+        try {
+            em.remove(userDetails);
+            logService.saveLog(new Log(LogType.INFO, "Object userDetails of id "+userDetailsId+ " has been deleted"));
+            return Optional.of(true);
+        } catch (Exception e) {
+            return Optional.of(false);
+        }
+    }
 
 
 

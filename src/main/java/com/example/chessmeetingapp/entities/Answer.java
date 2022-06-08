@@ -1,6 +1,7 @@
 package com.example.chessmeetingapp.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 
@@ -28,7 +29,7 @@ public class Answer {
     @JsonBackReference
     private UserDetails userCreator;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     @JoinColumn(name = "topic")
     @JsonBackReference
     private Topic topic;

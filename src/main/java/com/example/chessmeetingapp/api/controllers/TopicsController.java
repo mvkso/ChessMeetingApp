@@ -28,7 +28,14 @@ public class TopicsController {
 
     @GetMapping("/")
     public List<Topic> displayAllTopics(){
-        return topicsService.getAllTopics().stream().collect(Collectors.toList());
+        return topicsService.getAllTopics().stream().limit(15)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/all")
+    public List<Topic> displayTopics(){
+        return topicsService.getAllTopics().stream()
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{category}")

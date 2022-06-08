@@ -60,7 +60,6 @@ public class ReservationController {
 
     @GetMapping("/{reservationId}")
     public Reservation getReservationById(@PathVariable("reservationId") int Id){
-        System.out.println(reservationService.getReservationById(Id));
         return reservationService.getReservationById(Id).get();
     }
 
@@ -93,7 +92,6 @@ public class ReservationController {
 
     @GetMapping("/{reservationId}/bookedUsers")
     public List<UserDetailsResponse> getAllUsersFromReservation(@PathVariable("reservationId") int Id){
-        System.out.println("HALOOOOO "+reservationService.getReservationById(Id).get().getUsersReserved());
         return reservationService.getReservationById(Id).get().getUsersReserved()
                 .stream().map(UserDetailsResponse::fromUserDetails)
                 .collect(Collectors.toList());
@@ -119,6 +117,13 @@ public class ReservationController {
         reservationService.bookReservation(reservation.reservationId(), reservation.userId())
                 .orElseThrow(()-> new RestException("Unable to book reservation"));
         return ResponseEntity.ok(new MessageResponse("Reservation booked"));
+    }
+
+    @GetMapping("/recent")
+    public List<ReservationResponse> getMostRecentReservations(){
+        return reservationService.getTwoMostRecentReservations()
+                .stream().map(ReservationResponse::fromReservation)
+                .collect(Collectors.toList());
     }
 
 

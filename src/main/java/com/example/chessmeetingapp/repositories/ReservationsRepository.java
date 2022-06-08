@@ -23,6 +23,8 @@ public interface ReservationsRepository extends CrudRepository<Reservation, Inte
 
     List<Reservation> findAllByCityAddress(String address);
 
+    List<Reservation> findAllByOrderByDateTimeFromDesc();
+
 
 
 

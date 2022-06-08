@@ -12,6 +12,8 @@ public interface TopicRepository extends CrudRepository<Topic, Integer> {
 
     Optional<Topic> findTopicById(int id);
 
+    List<Topic> findAllByOrderByCreatedDateDesc();
+
     List<Topic> findTopicsByCategoryOrderByCreatedDateDesc(String category);
     List<Topic> findTopicsByUserCreator_IdOrderByCreatedDateDesc(int id);
 

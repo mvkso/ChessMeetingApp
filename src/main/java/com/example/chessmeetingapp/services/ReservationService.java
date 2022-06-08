@@ -1,5 +1,7 @@
 package com.example.chessmeetingapp.services;
 
+import com.example.chessmeetingapp.entities.Log;
+import com.example.chessmeetingapp.entities.LogType;
 import com.example.chessmeetingapp.entities.Reservation;
 import com.example.chessmeetingapp.entities.UserDetails;
 import com.example.chessmeetingapp.repositories.ReservationsRepository;
@@ -15,7 +17,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -24,6 +25,7 @@ public class ReservationService {
     private final UserDetailsRepository userDetailsRepository;
     private final UserService userService;
     private final UserDetailsService userDetailsService;
+    private final LogService logService;
 
     @PersistenceContext
     EntityManager em;
@@ -31,11 +33,12 @@ public class ReservationService {
     public static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
     @Autowired
-    public ReservationService(ReservationsRepository reservationsRepository, UserDetailsRepository userDetailsRepository, UserService userService, UserDetailsService userDetailsService) {
+    public ReservationService(ReservationsRepository reservationsRepository, UserDetailsRepository userDetailsRepository, UserService userService, UserDetailsService userDetailsService, LogService logService) {
         this.reservationsRepository = reservationsRepository;
         this.userDetailsRepository = userDetailsRepository;
         this.userService = userService;
         this.userDetailsService = userDetailsService;
+        this.logService = logService;
     }
 
     public Optional<Boolean> createReservation(CreateReservationRequest request){
@@ -52,6 +55,8 @@ public class ReservationService {
             reservation.getUsersReserved().add(userDetails);
             userDetails.getCreatedReservations().add(reservation);
             reservationsRepository.save(reservation);
+            logService.saveLog(new Log(LogType.INFO, "Reservation in "+request.CityAddress()+" with subject:  "
+                    +request.Subject()+" has been created by user of id: "+request.userId()));
             return Optional.of(false);
         }catch (Exception e){
             return Optional.empty();
@@ -71,6 +76,7 @@ public class ReservationService {
         }
         try {
             reservationsRepository.delete(reservation);
+            logService.saveLog(new Log(LogType.INFO, "Reservation of ud "+reservationId+ "has been deleted"));
 
             return Optional.of(true);
         }catch (Exception e){
@@ -92,6 +98,7 @@ public class ReservationService {
                 em.merge(userDetails);
                 reservationsRepository.delete(reservation);
                 logger.warn("event id:" + reservation.getId() + " will be deleted by userDetails id: " + userDetails.getId());
+                logService.saveLog(new Log(LogType.INFO, "event id:" + reservation.getId() + " will be deleted by userDetails id: " + userDetails.getId()));
                 return Optional.of(true);
             } else {
                 if (reservation.getUsersReserved().contains(userDetails)) {
@@ -123,6 +130,7 @@ public class ReservationService {
                     reservation.setSlotsBooked(reservation.getSlotsBooked()+1);
                     userDetails.addBookedReservation(reservation);
                     em.merge(userDetails);
+                    logService.saveLog(new Log(LogType.INFO, "event id:" + reservationId + " will be deleted by userDetails id: " + userDetails.getId()));
                     return Optional.of(true);
                 }else return Optional.of(false);
             }
@@ -154,7 +162,6 @@ public class ReservationService {
         UserDetails userDetails;
         try{
             userDetails = userDetailsRepository.findById(userId).get();
-//            reservationsRepository.findAllByUserCreator(userDetails).forEach(result::add);
             userDetails.getCreatedReservations().forEach(result::add);
         }catch(NoSuchElementException e){
             logger.warn("no user with id "+userId);
@@ -188,18 +195,11 @@ public class ReservationService {
             Iterator<Reservation> i = reservationsList.iterator();
             while (i.hasNext()) {
                 Reservation reservation = i.next();
-                if(reservation.getUserCreator().equals(userDetails) || reservation.getUsersReserved().contains(userDetails)){
+                if((reservation.getUserCreator().equals(userDetails) || reservation.getUsersReserved().contains(userDetails))
+                        || reservation.getDateTimeFrom().isBefore(LocalDateTime.now())){
                     i.remove();
                 }
             }
-//                    .forEach(reservation -> {
-//                        if(reservation.getUserCreator().equals(userDetails) || reservation.getUsersReserved().contains(userDetails)){
-//
-//                        }
-//                    });
-
-
-
             return reservationsList;
         }catch (NoSuchElementException ex){
             logger.warn("exception in getAllReservationsByCity function");
@@ -211,38 +211,12 @@ public class ReservationService {
 
     }
 
-    public List<Reservation> getUpcomingReservations(int userId, LocalDateTime nowTime){
-        List<Reservation> upcomingReservations = new LinkedList<>();
-        try{
-            for(Reservation reservation : reservationsRepository.findAllByUserCreator_Id(userId)){
-                if (reservation.getDateTimeFrom().isAfter(nowTime)) {
-                    upcomingReservations.add(reservation);
-                }
-            }
-//            reservations.addAll();
-        }catch (NoSuchElementException ex){
-            logger.warn("noSuchElementException in getUpcomingReservations function");
-            return List.of();
-        }
 
-        return upcomingReservations;
-    }
 
-    public List<Reservation> getPastReservations(int userId, LocalDateTime nowTime){
-        List<Reservation> pastReservations = new LinkedList<>();
-        try{
-            for(Reservation reservation : reservationsRepository.findAllByUserCreator_Id(userId)){
-                if (reservation.getDateTimeFrom().isBefore(nowTime)) {
-                    pastReservations.add(reservation);
-                }
-            }
-//            reservations.addAll();
-        }catch (NoSuchElementException ex){
-            logger.warn("noSuchElementException in getUpcomingReservations function");
-            return List.of();
-        }
-
-        return pastReservations;
+    public List<Reservation> getTwoMostRecentReservations(){
+        List<Reservation> reservationList = new LinkedList<>();
+        reservationsRepository.findAllByOrderByDateTimeFromDesc().stream().limit(2).forEach(reservationList::add);
+        return reservationList;
     }
 
 

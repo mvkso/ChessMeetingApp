@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -68,23 +69,22 @@ public class UserDetailsController {
 
     @GetMapping("/")
     //@PreAuthorize("hasAuthority('Admin') or hasAuthority('User')")
-    public List<UserDetailsResponse> getAllEmployees(){
-        System.out.println(userDetailsService.getUsersDetails());
+    public List<UserDetailsResponse> getAllUsersDetails(){
         return userDetailsService.getUsersDetails()
                 .stream()
                 .map(UserDetailsResponse::fromUserDetails)
                 .collect(Collectors.toList());
     }
 
-//    @GetMapping("/page/{pageNumber}")
-//    //@PreAuthorize("hasAuthority('Admin')")
-//    @Transactional
-//    public List<UserDetailsResponse> getEmployeesByPage(@PathVariable("pageNumber") int pageNumber){
-//        return userDetailsService.getUserDetailsByPage(pageNumber,10)
-//                .stream()
-//                .map(UserDetailsResponse::fromUserDetails)
-//                .collect(Collectors.toList());
-//    }
+    @GetMapping("/page/{pageNumber}")
+    //@PreAuthorize("hasAuthority('Admin')")
+    @Transactional
+    public List<UserDetailsResponse> getUserDetailsByPage(@PathVariable("pageNumber") int pageNumber){
+        return userDetailsService.getUserDetailsByPage(pageNumber,10)
+                .stream()
+                .map(UserDetailsResponse::fromUserDetails)
+                .collect(Collectors.toList());
+    }
 
 
 
@@ -93,7 +93,6 @@ public class UserDetailsController {
 //    @PreAuthorize("hasAuthority('Admin')")
     @Transactional
     public UserDetailsResponse getUserDetailsById(@PathVariable("userDetailsId") int userDatailsId){
-        System.out.println(userDetailsService.getUserDetailsById(userDatailsId).get().getCreatedReservations().toString());
         return userDetailsService.getUserDetailsById(userDatailsId)
                 .map(UserDetailsResponse::fromUserDetails)
                 .orElseThrow(() -> new RestException("Unable to get employee by employeeId=" + userDatailsId));
@@ -143,7 +142,7 @@ public class UserDetailsController {
     }
 
 
-    //@PreAuthorize("hasAuthority('User')")
+    @PreAuthorize("hasAuthority('User')")
     @PutMapping("/{userId}/nameOrLastName")
     public ResponseEntity<?> updateUserNameOrLastName(@Valid @RequestBody EditNameOrLastNameRequest request,
                                                           @PathVariable int userId){
@@ -151,7 +150,7 @@ public class UserDetailsController {
         try{
             userDetails = userDetailsService.getUserDetailsByUserId(userId).get();
         }catch (NoSuchElementException e){
-            return errorMessage("Error: Employee not found");
+            return errorMessage("Error: User not found");
         }
         if(!request.name().equals(userDetails.getFirstName())){
             userDetailsService.changeFirstName(request.name(), userId);
@@ -159,12 +158,12 @@ public class UserDetailsController {
         if(!request.lastName().equals(userDetails.getLastName())){
             userDetailsService.changeLastName(request.lastName(),userId);
         }
-        return ResponseEntity.ok(new MessageResponse("Employee data edited successfully!"));
+        return ResponseEntity.ok(new MessageResponse("User data edited successfully!"));
     }
 
 
     @PutMapping("{userId}/password")
-    //@PreAuthorize("hasAuthority('User') or hasAuthority('Admin')")
+    @PreAuthorize("hasAuthority('User') or hasAuthority('Admin')")
     public ResponseEntity<?> editUserPassword(@RequestBody ChangePasswordRequest request,
                                                   @PathVariable("userId") int userId){
 
@@ -176,7 +175,7 @@ public class UserDetailsController {
             email = userService.getUserById(userId).getEmail();
         }
         catch(NoSuchElementException e){
-            return errorMessage("Error: Not found employee!");
+            return errorMessage("Error: User not founds!");
         }
         try{
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, request.oldPassword()));
@@ -189,13 +188,13 @@ public class UserDetailsController {
         return ResponseEntity.ok(new MessageResponse("Password edited successfully!"));
     }
 
-//
-//    @DeleteMapping("/{userDetailsId}")
-////    @PreAuthorize("hasAuthority('Admin')")
-//    public void deleteUserDetails(@PathVariable("userDetailsId") int userDetailsId){
-//        userDetailsService.delete(userDetailsId)
-//                .orElseThrow(() -> new RestException("Unable to delete an user"));
-//    }
+
+    @DeleteMapping("/{userDetailsId}")
+    @PreAuthorize("hasAuthority('Admin')")
+    public void deleteUserDetails(@PathVariable("userDetailsId") int userDetailsId){
+        userDetailsService.deleteUserDetails(userDetailsId)
+                .orElseThrow(() -> new RestException("Unable to delete an user"));
+    }
 
 
 }

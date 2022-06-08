@@ -5,16 +5,19 @@ import com.example.chessmeetingapp.entities.Answer;
 import com.example.chessmeetingapp.entities.Topic;
 import com.example.chessmeetingapp.requests.forum.AddAnswer;
 import com.example.chessmeetingapp.requests.forum.CreateTopic;
+import com.example.chessmeetingapp.requests.forum.DeleteTopic;
 import com.example.chessmeetingapp.requests.forum.UpdateAnswer;
 import com.example.chessmeetingapp.services.AnswerService;
 import com.example.chessmeetingapp.services.TopicService;
 import com.example.chessmeetingapp.services.UserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static com.example.chessmeetingapp.error.ErrorMessage.errorMessage;
 
@@ -62,4 +65,11 @@ public class TopicController {
         topicService.createTopic(createTopic.title(),createTopic.content(),createTopic.category(),createTopic.userId());
         return ResponseEntity.ok(new MessageResponse("Topic title: "+createTopic.title()+" for category '"+createTopic.category()+"' of userId: "+createTopic.userId()+" added!"));
     }
+  //  @Transactional
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteTopic(@Valid @RequestBody DeleteTopic deleteTopic) {
+        topicService.deleteTopic(deleteTopic.topicId());
+        return ResponseEntity.ok(new MessageResponse("Topic id: " + deleteTopic.topicId() + " deleted!"));
+    }
+
 }
